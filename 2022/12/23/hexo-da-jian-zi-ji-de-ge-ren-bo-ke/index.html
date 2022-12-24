@@ -465,6 +465,9 @@
         <hr class="clearfix">
 
         
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/libs/prism/prism.css">
+        
 
         
 
@@ -475,12 +478,10 @@
 <p>下载完node.js我们再来进行一下简单的配置，具体可以参见<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/442215189">这篇博客</a></p>
 <p>下载完node.js一般会自动帮你把npm下载好同样的我们使用<code>npm-v</code>查看是否安装<br><img src="/../assets/npm-v.png"></p>
 <p>然后我们接着用淘宝源下载cnmp：</p>
-<pre><code>npm install -g cnpm --registry=https://registry.npm.taobao.org
-</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">npm install -g cnpm --registry=https://registry.npm.taobao.org<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>同样用<code>cnpm -v</code>查看是否安装成功<br><img src="/../assets/cnpm-v.png"></p>
 <h3 id="hexo下载-1"><a href="#hexo下载-1" class="headerlink" title="hexo下载"></a>hexo下载</h3><p>终于到了下载hexo了，执行下面命令下载：</p>
-<pre><code>cnpm install -g hexo-cli
-</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">cnpm install -g hexo-cli<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>查看是否安装成功：</p>
 <p><img src="/../assets/hexo-v.png"></p>
 <p>接下来我们创建一个空目录叫Blog(里面会装所有我们的博客内容、配置、样式等)，我这里在D盘创建了。然后跳转到这个目录，执行<code>hexo init</code></p>
@@ -499,8 +500,8 @@
 <p>然后我们再执行<code>hexo s</code>在本地看看效果吧：<br>不出意外，你应该可以看到你新建的那篇博客！</p>
 <h2 id="部署到github"><a href="#部署到github" class="headerlink" title="部署到github"></a>部署到github</h2><p>首先我们先登录我们的github新建一个名为<code>username.github.io</code>的仓库(其中username为你自己的用户名)，千万注意这个仓库名只能是这个，一个字符都不能错！！！<br></p>
 <p>创建完后当前仓库还是空的，我们先下载一个hexo-deployer-git包:</p>
-<pre><code>cnpm install --save hexo-deployer-git
-</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">cnpm install --save hexo-deployer-git<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>然后进行一些关键配置：<br>进入Blog目录找到_config.yml并打开，将type后面填入git(单引号别删，mac系统貌似本来就没有单引号)，然后在下面添加两行repo和branch，repo填入自己刚刚创建好的那个github仓库地址(.git后缀)，branch就填master就好(注意冒号后面加空格哦)</p>
 <p><img src="/../assets/hexo-config.png"></p>
 <p>配置好后直接<code>hexo d</code>就开始部署了！（如果你之前没对github做什么配置的话应该是要输入github用户名和密码的）<br></p>
