@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, Wanglongzhi">
+    <meta name="keywords" content="详解反射, Wanglongzhi">
     <meta name="description" content="相信明天会更好">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | Wanglongzhi</title>
+    <title>详解反射 | Wanglongzhi</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -312,12 +312,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title">详解反射</h1>
                 </div>
             </div>
         </div>
@@ -431,9 +431,13 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/golang/">
+                                <span class="chip bg-color">golang</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -445,7 +449,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-12-23
+                    2022-12-27
                 </div>
                 
 
@@ -454,14 +458,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    73
+                    1.4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    6 分
                 </div>
                 
 
@@ -484,19 +488,201 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new "My New Post"<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+                <p>在之前的学习中，对反射总是一知半解，之前对反射的作用大概就停留在获取、设置结构体tag的值、获取结构体字段的值、属性，以及一些json的序列化和反序列化貌似也是通过反射做的？，今天花了几个小时详细的了解了一番golang中的反射，在此记录一下！</p>
+<h2 id="反射三原则"><a href="#反射三原则" class="headerlink" title="反射三原则"></a>反射三原则</h2><p>在使用反射之前,此文<a target="_blank" rel="noopener" href="https://go.dev/blog/laws-of-reflection">The Laws of Reflection</a>必读.网上中文翻译版本不少,可以搜索阅读.<br><br>三原则：</p>
+<ul>
+<li>Reflection goes from interface value to reflection object</li>
+<li>Reflection goes from reflection object to interface value</li>
+<li>To modify a reflection object, the value must be settable</li>
+</ul>
+<p>在三原则中,有两个关键词 interface value 与 reflection object.有点难理解,画张图可能您就懂了.<br></p>
+<p><img src="/../assets/reflect/reflect-pic.jpg" alt="反射" title="反射"></p>
+<h2 id="反射的使用"><a href="#反射的使用" class="headerlink" title="反射的使用"></a>反射的使用</h2><p>它定义了两个重要的类型 Type 和 Value 任意接口值在反射中都可以理解为由 reflect.Type 和 reflect.Value 两部分组成，并且 reflect 包提供了 reflect.TypeOf 和 reflect.ValueOf 两个函数来获取任意对象的 Value 和 Type。使用反射，我们需要导入reflect包</p>
+<ul>
+<li><p>获取类型信息(static type)：reflect.TypeOf，是静态的</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">import (
+	"fmt"
+	"reflect"
+)
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+func main() {
+	var x float64 = 3.4
+	fmt.Println("type:", reflect.TypeOf(x))
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>输出结果</p>
+<pre class="line-numbers language-none"><code class="language-none">type: float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>如果我们查看<code>reflect.TypeOf</code>源码，会发现其返回值是<code>Type</code>类型，这验证了我们上面所说的Type和Value</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">// TypeOf returns the reflection Type that represents the dynamic type of i.
+// If i is a nil interface value, TypeOf returns nil.
+func TypeOf(i any) Type {
+	eface := *(*emptyInterface)(unsafe.Pointer(&amp;i))
+	return toType(eface.typ)
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>获取反射的种类Kind</p>
+</li>
+</ul>
+<p>什么叫Kind，在Golang中如果你定义<code>var a int32 = 5</code>，那么显然a是int32类型的，或者我们叫其<code>static type</code>为int，但是如果你定义了自定义类型</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">type Myint int32
+var a Myint = 5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>那么a的<code>static type</code>是Myint也就是你显式声明的类型，而a的<code>underly type</code>是int32，也就是说a的潜在类型是int，而<code>Kind</code>方法返回的是<code>underly type</code>!</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">import (
+	"fmt"
+	"reflect"
+)
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+func main() {
+	type Myint int32
+	var A Myint = 5
+	typeofA := reflect.TypeOf(A)
+	fmt.Printf("static type: %v \n", typeofA.Name())
+	fmt.Printf("underly type: %v \n", typeofA.Kind())
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+}
+
+/* 输出结果
+static type: Myint
+underly type: int32 
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>相同的，对于结构体我们这么干得到的结果也是如我们所预期的那样</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">func main() {
+	type A struct{}
+	a := A{}
+	typeofa := reflect.TypeOf(a)
+	fmt.Printf("static type: %v \n", typeofa.Name())
+	fmt.Printf("underly type: %v \n", typeofa.Kind())
+}
+
+/* 输出结果
+static type: A
+underly type: struct 
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><p>获取值信息：reflect.ValueOf，是动态的</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">func main() {
+	var x float64 = 3.4
+	valueofX := reflect.ValueOf(x)
+	fmt.Println("value:", valueofX)
+	fmt.Println("value:", valueofX.String())
+
+}
+/* 输出结果
+value: 3.4
+value: &lt;float64 Value&gt;
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们我们显式调用String方法，因为默认情况下，fmt包会挖掘到reflect.Value，以显示内部的具体值。而String方法不会</p>
+</li>
+<li><p>修改值信息</p>
+</li>
+</ul>
+<p>在反射中修改值信息是通过<code>SetFloat</code>、<code>SetInt</code>方法(具体方法根据具体类型而定)，但是有一些坑需要注意<br>如果我们直接使用<code>SetFloat</code>方法</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">func main() {
+	var x float64 = 3.4
+	v := reflect.ValueOf(x)
+	v.SetFloat(7.1) // Error: will panic.
+}
+
+/* 输出结果
+panic: reflect: reflect.Value.SetFloat using unaddressable value
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>根本原因在于，我们传入x是对x值拷贝，因此你对拷贝的值进行了修改而你以为对原来的x进行了修改，导致你对拷贝的值修改过后却没有用到他，Go当然不会允许这样的事情发生，因此panic！<br><br>我们可以通过<code>CanSet</code>方法来查看能否修改</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">var x float64 = 3.4
+v := reflect.ValueOf(x)
+fmt.Println("settability of v:", v.CanSet())
+
+/* 结果
+settability of v: false
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>正确做法：传入x的地址，并调用Elem方法解引用！</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">var x float64 = 3.4
+p := reflect.ValueOf(&amp;x) // Note: take the address of x.
+v := p.Elem()
+v.SetFloat(6.9)
+fmt.Println("settability of v:", v.CanSet())
+fmt.Println("value of x: ", x)
+
+/* 输出结果
+settability of v: true
+value of x:  6.9
+*/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们修改值信息必须知道对应的类型来调用对应的方法，因此我们通常可以配和使用switch来实现</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">//反射修改值
+func reflect_set_value(a interface{}) {
+    v := reflect.ValueOf(a)
+    k := v.Kind()
+    switch k {
+    case reflect.Float64:
+        // 反射修改值
+        v.SetFloat(6.9)
+        fmt.Println("a is ", v.Float())
+    case reflect.Ptr:
+        // Elem()获取地址指向的值
+        v.Elem().SetFloat(7.9)
+        fmt.Println("case:", v.Elem().Float())
+        // 地址
+        fmt.Println(v.Pointer())
+    }
+}
+
+func main() {
+    var x float64 = 3.4
+    // 反射认为下面是指针类型，不是float类型
+    reflect_set_value(&amp;x)
+    fmt.Println("main:", x)
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="反射与结构体"><a href="#反射与结构体" class="headerlink" title="反射与结构体"></a>反射与结构体</h2><p>任意值通过 reflect.TypeOf() 获得反射对象信息后，如果它的类型是结构体，可以通过反射值对象 reflect.Type 的 NumField() 和 Field() 方法获得结构体成员的详细信息。</p>
+<h3 id="查看结构体类型、字段、方法"><a href="#查看结构体类型、字段、方法" class="headerlink" title="查看结构体类型、字段、方法"></a>查看结构体类型、字段、方法</h3><p>我们可以根据<code>NumField</code>方法得到结构体有多少个字从而进行遍历，通过<code>Field</code>方法得到具体的某个字段，通过<code>NUmMethod</code>得到结构体有多少个方法，通过<code>Method</code>方法得到具体的某个方法</p>
+<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">// 定义结构体
+type User struct {
+	Id   int
+	Name string
+	Age  int
+}
+
+// 绑方法
+func (u User) Hello() {
+	fmt.Println("Hello")
+}
+
+// 传入interface{}
+func Poni(o interface{}) {
+	t := reflect.TypeOf(o)
+	fmt.Println("类型：", t)
+	fmt.Println("字符串类型：", t.Name())
+	// 获取值
+	v := reflect.ValueOf(o)
+	fmt.Println(v)
+	// 可以获取所有属性
+	// 获取结构体字段个数：t.NumField()
+	for i := 0; i &lt; t.NumField(); i++ {
+		// 取每个字段
+		f := t.Field(i)
+		fmt.Printf("%s : %v", f.Name, f.Type)
+		// 获取字段的值信息
+		// Interface()：获取字段对应的值
+		val := v.Field(i).Interface()
+		fmt.Println("val :", val)
+	}
+	fmt.Println("=================方法====================")
+	for i := 0; i &lt; t.NumMethod(); i++ {
+		m := t.Method(i)
+		fmt.Println(m.Name)
+		fmt.Println(m.Type)
+	}
+
+}
+
+func main() {
+	u := User{1, "zs", 20}
+	Poni(u)
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>未完待续…</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://go.dev/blog/laws-of-reflection">The Laws of Reflection</a><br><br><a target="_blank" rel="noopener" href="https://www.topgoer.cn/docs/golang/chapter11-12">反射(地鼠文档)</a><br><br><a target="_blank" rel="noopener" href="https://pkg.go.dev/reflect@go1.19.4#pkg-overview">reflect(go官方文档)</a><br><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/411313885">一篇带你全面掌握go反射的用法</a><br><br><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/4407.html">Go语言反射（reflection）简述</a></p>
+</blockquote>
 
                 
             </div>
@@ -523,7 +709,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/12/23/hello-world/">http://example.com/2022/12/23/hello-world/</a>
+                    <a href="http://example.com/2022/12/27/xiang-jie-fan-she/">http://example.com/2022/12/27/xiang-jie-fan-she/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -560,7 +746,11 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/golang/">
+                                    <span class="chip bg-color">golang</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -728,17 +918,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/12/23/hexo-da-jian-zi-ji-de-ge-ren-bo-ke/">
+                <a href="/2022/12/27/xiang-jie-fan-she/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="hexo搭建自己的个人博客">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="详解反射">
                         
-                        <span class="card-title">hexo搭建自己的个人博客</span>
+                        <span class="card-title">详解反射</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -748,9 +939,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-23
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -759,11 +950,12 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3/">
-                        <span class="chip bg-color">博客相关</span>
+                    <a href="/tags/golang/">
+                        <span class="chip bg-color">golang</span>
                     </a>
                     
                 </div>
@@ -774,16 +966,16 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/12/23/hello-world/">
+                <a href="/2022/12/23/hexo-da-jian-zi-ji-de-ge-ren-bo-ke/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="hexo搭建自己的个人博客">
                         
-                        <span class="card-title">Hello World</span>
+                        <span class="card-title">hexo搭建自己的个人博客</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -804,7 +996,14 @@
                         </span>
                     </div>
                 </div>
-
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3/">
+                        <span class="chip bg-color">博客相关</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
