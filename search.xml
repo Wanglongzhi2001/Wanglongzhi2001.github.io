@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>net/http包入门</title>
+      <link href="/2022/12/28/net-http-bao-ru-men/"/>
+      <url>/2022/12/28/net-http-bao-ru-men/</url>
+      
+        <content type="html"><![CDATA[<p>在学习websocket时发现源码里用到很多net/http包，导致看的有点费力。因为之前一直用的gin框架，所以没怎么看net/http包，但是想到毕竟是内置的包，不仅很多别的包会用到，而且自己要实现一些小功能的话肯定也是优先会使用net/http包，因此在此学习下net/http包</p><p>首先，net/http包提供了服务端和客户端的实现，下面让我们看看服务端和客户端的相关函数示例</p><h1 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h1><p>先看看下面这段代码</p><pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">import ("fmt""net/http")func main() {//http://127.0.0.1:8000/go// 单独写回调函数http.HandleFunc("/go", myHandler)//http.HandleFunc("/ungo",myHandler2 )// addr：监听的地址// handler：回调函数http.ListenAndServe("127.0.0.1:8000", nil)}// handler函数func myHandler(w http.ResponseWriter, r *http.Request) {fmt.Println(r.RemoteAddr, "连接成功")// 请求方式：GET POST DELETE PUT UPDATEfmt.Println("method:", r.Method)// /gofmt.Println("url:", r.URL.Path)fmt.Println("header:", r.Header)fmt.Println("body:", r.Body)// 回复w.Write([]byte("来自我的回复"))}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>首先要提的是<code>http.HandleFunc</code>函数，毫无疑问，作为服务端首先要写一个路由然后为这个路由绑定相关的处理函数。这个函数就相当于gin框架中的<code>r.GET</code>或者<code>r.POST</code>方法，但是这里的服务端貌似不能为路由指定GET或者POST等方式，只能在客户端指定GET或者POST的访问方式<br><br>对于传入的路由的处理函数，我们看到下面的myHandler就能看到，需要传入<code>http.ResponseWriter</code>和<code>*http.Request</code>两种类型的变量。<br><br><code>http.ResponseWriter</code>是用来构造响应的，也就是说用它来设置你这个路由函数要输出什么怎么输出<br><br><code>*http.Request</code>是请求表示由服务器接收或由客户端发送的HTTP请求，由它我们能得到请求的ip地址，请求访问的路由的路径等等，也就是说这个接口代表了你输入的信息<br><br>最后，<code>http.ListenAndServe</code>用来启动我们的HTTP服务端！第一个参数需要传入TCP网络地址，第二个参数传入对应的处理函数（通常为nil从而使用默认的DefaultServeMux）</p><h1 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h1><p>同样的，看个简单的示例，对这个示例进行解读</p><pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">import (    "fmt"    "io"    "net/http")func main() {    //resp, _ := http.Get("http://127.0.0.1:8000/go")    //fmt.Println(resp)    resp, _ := http.Get("http://www.baidu.com")    defer resp.Body.Close()    // 200 OK    fmt.Println(resp.Status)    fmt.Println(resp.Header)    buf := make([]byte, 1024)    for {        // 接收服务端信息        n, err := resp.Body.Read(buf)        if err != nil &amp;&amp; err != io.EOF {            fmt.Println(err)            return        } else {            fmt.Println("读取完毕")            res := string(buf[:n])            fmt.Println(res)            break        }    }}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>首先我们的<code>http.Get</code>方法请求了百度的网站，查看下面函数定义知道，这个方法接受一个要访问的url，返回一个响应<code>resp</code>和错误，这个响应<code>resp</code>有什么用我们后面会看到</p><pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">func (c *Client) Get(url string) (resp *Response, err error)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><blockquote><p>调用者在完成阅读后应该关闭resp.Body</p></blockquote><p>这就是<code>defer resp.Body.Close()</code>的作用，每次得到<code>resp</code>后都要记得使用这代码来关闭<br><br>通过这两行代码我们可以知道，响应里记录了相应的状态、Header包头等等！</p><pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">fmt.Println(resp.Status)fmt.Println(resp.Header)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><p>在for循环里我们定义一个buf接受响应体的信息，其中<code>resp.Body.Read</code>函数输入参数为<code>[]byte</code>类型的切片，输出响应体的长度n和错误err，其中当读到响应体结尾时，错误为io.EOF</p><p><img src="/../assets/net_http/cli_res.png" alt="访问百度的输出结果"></p><p>我们将url换成我们自己写的服务器端的url也会得到我们想要的响应！</p><p>未完待续…</p><blockquote><p>参考资料：<br><br><a href="https://pkg.go.dev/net/http@go1.19.4">go官方文档</a><br><br><a href="https://www.topgoer.cn/docs/golang/chapter08-3">地鼠文档</a></p></blockquote>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> golang </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Gorm基本使用</title>
       <link href="/2022/12/28/gorm-ji-ben-shi-yong/"/>
       <url>/2022/12/28/gorm-ji-ben-shi-yong/</url>
