@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="设计模式, Wanglongzhi">
+    <meta name="keywords" content="RabbitMQ入门, Wanglongzhi">
     <meta name="description" content="相信明天会更好">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>设计模式 | Wanglongzhi</title>
+    <title>RabbitMQ入门 | Wanglongzhi</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -312,12 +312,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">设计模式</h1>
+                    <h1 class="description center-align post-title">RabbitMQ入门</h1>
                 </div>
             </div>
         </div>
@@ -433,8 +433,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
-                                <span class="chip bg-color">设计模式</span>
+                            <a href="/tags/RabbitMQ/">
+                                <span class="chip bg-color">RabbitMQ</span>
                             </a>
                         
                     </div>
@@ -449,7 +449,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-12-27
+                    2022-12-30
                 </div>
                 
 
@@ -458,7 +458,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.3k
+                    1.1k
                 </div>
                 
 
@@ -488,116 +488,43 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="设计模式思想"><a href="#设计模式思想" class="headerlink" title="设计模式思想"></a>设计模式思想</h1><p>这点在上李林老师的Linux环境高级编程课程时就深深体会到了。简单概括就是寻找变化点、封装变化点，让代码更具扩展性、维护性。</p>
-<h1 id="设计模式类型"><a href="#设计模式类型" class="headerlink" title="设计模式类型"></a>设计模式类型</h1><p>设计模式共有26种，根据类型来分可以分为创建型模式、结构性模式、行为型模式、J2EE模式<br>具体：</p>
-<table>
-<thead>
-<tr>
-<th>模式&amp;描述</th>
-<th>包括</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>创建型模式</td>
-<td>工厂模式<br>抽象工厂模式<br>单例模式<br>建造者模式<br>原型模式</td>
-</tr>
-<tr>
-<td>结构型模式</td>
-<td>适配器模式<br>桥接模式<br>过滤器模式<br>组合模式<br>装饰器模式<br>外观模式<br>享元模式<br>代理模式</td>
-</tr>
-<tr>
-<td>行为型模式</td>
-<td>责任链模式<br>命令模式<br>解释器模式<br>迭代器模式<br>中介者模式<br>备忘录模式<br>观察者模式<br>状态模式<br>空对象模式<br>策略模式<br>模板模式<br>访问者模式</td>
-</tr>
-<tr>
-<td>J2EE模式</td>
-<td>MVC 模式<br>业务代表模式<br>组合实体模式<br>数据访问对象模式<br>前端控制器模式<br>拦截过滤器模式<br>服务定位器模式<br>传输对象模式</td>
-</tr>
-</tbody></table>
-<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式使其<strong>创建过程延迟到子类</strong>进行。<br><br>工厂模式其实本质上就是<code>多态</code>，创建一个基类和不同的子类，让子类继承基类并实现其自己的方法！</p>
-<p>假设我们的业务需要一个支付渠道，我们开发了一个Pay方法，其可以用于支付。请看以下示例：</p>
-<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">func Pay(OrderId string) string { //OrderId订单号
-	//todo
-	fmt.Println(OrderId)
-	return "支付成功"
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>但是如果如果我们后面又需要一种支付方式，但是需要增加用户的<code>uid</code>，明显的这两个方法逻辑上不会有太多差异，如果还用上面的方法，仅为了一个参数的差异，我们就重新定义一个函数显然不好(会有大段重复代码)。</p>
-<p>那么这时我们可以考虑下面这样用接口的方式，定义了一个接口，接口里声明了Pay方法，并且定义了PayReq结构体实现了这个接口，那么以后我们再增加支付方式的话，我们把支付方式放在接口声明里，再在PeyReq里实现就好了！</p>
-<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">type Pay interface {
-  Pay() string
-}
-
-type PayReq struct {
-  OrderId string // 订单号
-}
-
-func (p *PayReq) Pay() string {
-  // todo
-  fmt.Println(p.OrderId)
-  return "支付成功"
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>那么当我们增加支付方式，比如一种叫Apay，一种叫Bpay，那么很容易想到，我们实现一个方法Apay和Bpay不就好了？</p>
-<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">type Pay interface {
-  APay() string
-  BPay() string
-}
-
-type PayReq struct {
-  OrderId string // 订单号
-  Uid int64
-}
-
-func (p *PayReq) APay() string {
-  // todo
-  fmt.Println(p.OrderId)
-  return "APay支付成功"
-}
-
-func (p *PayReq) BPay() string {
-  // todo
-  fmt.Println(p.OrderId)
-  fmt.Println(p.Uid)
-  return "BPay支付成功"
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>我们为Pay接口实现了APay() 和BPay() 方法（定义一个类，一个类里声明实现多个方法）。虽然暂时实现了业务需求，但却使得结构体PayReq变得冗余了，APay() 并不需要Uid参数。如果之后再增加CPay、DPay、EPay，可想而知，代码会变得越来越难以维护。</p>
-<p>解决：使用我们的工厂设计模式，将创建过程延迟到子类进行（定义多个子类，在不同子类中实现其自己的方法），上面的方法种我们的创建过程在接口中也就是基类中就声明了，在下面的方法中，可以发现接口中只定义了一个Pay，而相对的我们的子类变多了，让每个子类实现自己的Pay方法！于是后面再增加支付方式，我们只需再增加一个子类来继承我们的基类（实现接口）即可！</p>
-<pre class="line-numbers language-Golang" data-language="Golang"><code class="language-Golang">package factorymethod
-
-import "fmt"
-
-type Pay interface {
-  Pay(string) int
-}
-
-type PayReq struct {
-  OrderId string
-}
-
-type APayReq struct {
-  PayReq
-}
-
-func (p *APayReq) Pay() string {
-  // todo
-  fmt.Println(p.OrderId)
-  return "APay支付成功"
-}
-
-type BPayReq struct {
-  PayReq
-  Uid int64
-}
-
-func (p *BPayReq) Pay() string {
-  // todo
-  fmt.Println(p.OrderId)
-  fmt.Println(p.Uid)
-  return "BPay支付成功"
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>可以看到，工厂模式其实本质上就是<code>多态</code>，创建一个基类和不同的子类，让子类继承基类并实现其方法！</p>
-<h2 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h2><p>抽象工厂模式（Abstract Factory Pattern）是围绕一个超级工厂创建其他工厂。该超级工厂又称为其他工厂的工厂。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</p>
-<p>假设，有一个存储工厂，提供redis和mysql两种存储数据的方式。如果使用工厂方法模式，我们就需要一个存储工厂，并提供SaveRedis方法和SaveMysql方法。<br>如果此时业务还需要分成存储散文和古诗两种载体，这两种载体都可以进行redis和mysql存储。就可以使用抽象工厂模式，我们需要一个存储工厂作为父工厂，散文工厂和古诗工厂作为子工厂，并提供SaveRedis方法和SaveMysql方法。</p>
+                <h1 id="Windows下RabbitMQ安装"><a href="#Windows下RabbitMQ安装" class="headerlink" title="Windows下RabbitMQ安装"></a>Windows下RabbitMQ安装</h1><h2 id="安装Erlang"><a href="#安装Erlang" class="headerlink" title="安装Erlang"></a>安装Erlang</h2><ul>
+<li><p>下载安装<br><br>原因：RabbitMQ服务端代码是使用并发式语言Erlang编写的，安装Rabbit MQ的前提是安装Erlang<br><br>下载地址：<a target="_blank" rel="noopener" href="http://www.erlang.org/downloads">http://www.erlang.org/downloads</a><br><img src="/../assets/RabbitMQ/erlang_install.png"><br>安装过程一路next，不过安装路径自选</p>
+</li>
+<li><p>环境变量<br><br>  此电脑–&gt;鼠标右键“属性”–&gt;高级系统设置–&gt;环境变量–&gt;“新建”系统环境变量，变量名：ERLANG_HOME<br>  变量值就是刚才erlang的安装地址，点击确定。<br>  <img src="/../assets/RabbitMQ/env_var1.png"><br>  然后双击系统变量path，点击“新建”，将%ERLANG_HOME%\bin加入到path中。<br>  <img src="/../assets/RabbitMQ/env_var2.png"></p>
+<p>  最后在cmd输入<code>erl</code>查看是否安装成功</p>
+<p>  <img src="/../assets/RabbitMQ/erl_install_cmd.png"></p>
+</li>
+</ul>
+<h2 id="下载并安装RabbitMQ"><a href="#下载并安装RabbitMQ" class="headerlink" title="下载并安装RabbitMQ"></a>下载并安装RabbitMQ</h2><ul>
+<li><p>下载地址：<a target="_blank" rel="noopener" href="http://www.rabbitmq.com/download.html">http://www.rabbitmq.com/download.html</a></p>
+<p>  <img src="/../assets/RabbitMQ/rabbitmq_install.png"><br>  安装过程也是一路next，安装路径自己改</p>
+</li>
+<li><p>环境变量<br><br>  添加系统变量<br>  <img src="/../assets/RabbitMQ/rabbi_env_var1.png"></p>
+<p>  将系统变量\sbin添加到path中</p>
+<p>  <img src="/../assets/RabbitMQ/rabbi_env_var2.png"></p>
+</li>
+</ul>
+<h2 id="开启服务"><a href="#开启服务" class="headerlink" title="开启服务"></a>开启服务</h2><p>进入sbin目录，在此目录下打开cmd，输入<code>rabbitmq-plugins enable rabbitmq_management</code>，然后再输入<code>rabbitmq-server.bat</code>运行<br><br>注：我在此处运行失败，我是参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/jiankang66/article/details/90384050">这篇文章</a>的方法才成功，以后可以使用<code>net start rabbitmq</code>来开启服务</p>
+<p>打开服务后，打开<code>http://localhost:15672</code>，账号密码均为<code>guest</code>，即可进入管理页面</p>
+<p><img src="/../assets/RabbitMQ/manage_page.png"></p>
+<p>同样的，我们可以使用<code>net stop rabbitmq</code>来停止服务，此时再打开15672端口就打不开了</p>
+<h1 id="RabbitMQ入门"><a href="#RabbitMQ入门" class="headerlink" title="RabbitMQ入门"></a>RabbitMQ入门</h1><h2 id="基本命令行使用"><a href="#基本命令行使用" class="headerlink" title="基本命令行使用"></a>基本命令行使用</h2><p>windows在rabbitmq command prompt中使用<code>rabbitmq-plugins list</code>命令即可查看当前已安装的插件<br>空的中括号表示没有安装的插件，中括号中的E或e表示以安装的插件<br><img src="/../assets/RabbitMQ/rabbitmq-plugins_list.png"></p>
+<p>往下滑会看到一个rabbitmq_tracing插件并没有安装，我们可以通过<code>rabbitmq-plugins enable rabbitmq_tracing</code>的方式安装这个插件，安装完后如果你再使用<code>rabbitmq-plugins list</code>命令会发现这个插件前面中括号里多了E表示已安装 同样的要卸载这个插件只需使用<code>rabbitmq-plugins disable rabbitmq_tracing</code></p>
+<h2 id="管理页面基本查看"><a href="#管理页面基本查看" class="headerlink" title="管理页面基本查看"></a>管理页面基本查看</h2><p>打开15672端口登陆后，可以看到首页显示了一些基本信息，其中点击红框就可以查看节点的具体信息</p>
+<p><img src="/../assets/RabbitMQ/web_page1.png"></p>
+<p>上方的connections框点击进去会显示一些连接信息，Channels页面会显示一些隧道信息，Queues页面会显示我们的队列信息，Admin界面会显示我们的用户信息</p>
+<p><img src="/../assets/RabbitMQ/Admin_page.png"></p>
+<p>点击红框可以添加用户(不过要注意权限问题)，紫框是管理我们的虚拟机</p>
+<h2 id="RabbitMQ核心概念"><a href="#RabbitMQ核心概念" class="headerlink" title="RabbitMQ核心概念"></a>RabbitMQ核心概念</h2><ul>
+<li>VirtualHost<br><br>介绍具体概念之前，先让我们在管理界面上新建一个VirtualHost名为test(后面简记为vHost)方便理解<br><img src="/../assets/RabbitMQ/add_vHost.png"><br>通过输入vHost名称再进行添加可以看到上方界面多了个vHost<br><br><img src="/../assets/RabbitMQ/add_vHost2.png"><br>并且再点击Admin可以看到我们的guest用户多了个test这个vHost(之前只有/这一个vHost)<br>再让我们新建一个用户testuser(这里我们指定这个用户为管理员)<br><img src="/../assets/RabbitMQ/add_user.png"><br>添加完用户后我们可以发现应如下图所示(我的已经绑定了所以就不用我的图了)初始没有绑定vHost<br><img src="/../assets/RabbitMQ/add_user2.png"><br>  我们按下图所示点击按钮并绑定我们的vHost为test<br><img src="/../assets/RabbitMQ/add_user3.png"><br>  这样就可以看到我们的不同用户所对应的vHost了<br><img src="/../assets/RabbitMQ/add_user4.png"><br>现在，让我们说说vHost的作用：vhost起数据隔离的作用，刚才的testuser用户赋给了test这个vhost，那么不管他新建连接还是发送queues都只能在这个vhost中执行，不会到/这个vhost上<br><img src="/../assets/RabbitMQ/add_user5.png"><br>可以看到，新建vhost后，exchanges自动帮我们创建了这些exchanges来帮我们区分哪些。所以vhost是用来区分队列和隔离账号，这样通过vhost进行逻辑隔离可以用来隔开我们的开发、测试环境exchanges用于哪些vhost</li>
+<li>Connection<br><br>RabbitMQ监听进程后会在Connections出进行展示</li>
+<li>Exchange<br><br>叫做交换机，用作中转，当生产者生产消息时会首先进入交换机，根据交换机指定的规则，绑定对应的key，把所有的消息通过交换机发送到对应的key</li>
+<li>Channel<br><br>就是刚才的connection下会建立许多channel进行通信</li>
+<li>Queue<br><br>先在此处新建一个队列，就可以在界面中看到我们新建的队列<br><img src="/../assets/RabbitMQ/queue.png"><br>队列的作用：绑定交换机、接收消息，只要没有消费者就一直把消息存储到队列里面</li>
+<li>Binding<br><br>就是把刚才的队列绑定到交换机里，通过不同方式的绑定可以实现不同的工作模式</li>
+</ul>
+<p>未完待续…</p>
 
                 
             </div>
@@ -624,7 +551,7 @@ func (p *BPayReq) Pay() string {
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/12/27/she-ji-mo-shi/">http://example.com/2022/12/27/she-ji-mo-shi/</a>
+                    <a href="http://example.com/2022/12/30/rabbitmq-ru-men/">http://example.com/2022/12/30/rabbitmq-ru-men/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -662,8 +589,8 @@ func (p *BPayReq) Pay() string {
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
-                                    <span class="chip bg-color">设计模式</span>
+                                <a href="/tags/RabbitMQ/">
+                                    <span class="chip bg-color">RabbitMQ</span>
                                 </a>
                             
                         </div>
@@ -833,17 +760,18 @@ func (p *BPayReq) Pay() string {
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2022/12/28/gorm-ji-ben-shi-yong/">
+                <a href="/2022/12/30/rabbitmq-ru-men/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="Gorm基本使用">
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="RabbitMQ入门">
                         
-                        <span class="card-title">Gorm基本使用</span>
+                        <span class="card-title">RabbitMQ入门</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -853,9 +781,9 @@ func (p *BPayReq) Pay() string {
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-28
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-30
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -864,11 +792,12 @@ func (p *BPayReq) Pay() string {
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Gorm/">
-                        <span class="chip bg-color">Gorm</span>
+                    <a href="/tags/RabbitMQ/">
+                        <span class="chip bg-color">RabbitMQ</span>
                     </a>
                     
                 </div>
@@ -882,13 +811,13 @@ func (p *BPayReq) Pay() string {
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/12/27/xiang-jie-fan-she/">
+                <a href="/2022/12/30/gao-bing-fa-miao-sha-xi-tong-xiang-mu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="详解反射">
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="高并发秒杀系统项目">
                         
-                        <span class="card-title">详解反射</span>
+                        <span class="card-title">高并发秒杀系统项目</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -899,7 +828,7 @@ func (p *BPayReq) Pay() string {
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-30
                             </span>
                         <span class="publish-author">
                             
@@ -912,8 +841,8 @@ func (p *BPayReq) Pay() string {
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/golang/">
-                        <span class="chip bg-color">golang</span>
+                    <a href="/tags/%E9%A1%B9%E7%9B%AE/">
+                        <span class="chip bg-color">项目</span>
                     </a>
                     
                 </div>
